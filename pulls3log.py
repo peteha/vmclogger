@@ -1,9 +1,43 @@
+import json
 import os
+import requests
 import boto3
+import gzip
 from decimal import Decimal
-from dotenv import load_dotenv
+from dotenvy import load_env, read_file
+import ndjson
 
-load_dotenv(override=True)
+load_env(read_file('.env'))
+
+def s3getfile(filename):
+    s3 = boto3.client('s3')
+    response = s3.get_object(Bucket=bucket_name, Key=filename)
+    retndjson = ndjson.loads(gzip.decompress(response['Body'].read()))
+    return retndjson
+
+
+def send_json_to_sumo(url, data, headers=None):
+  """
+  Sends JSON data to a Sumo Logic HTTP Source.
+
+  Args:
+    url: The URL of the Sumo Logic HTTP Source.
+    data: The JSON data to send.
+    headers: (Optional) A dictionary of HTTP headers to include in the request.
+  """
+
+  if headers is None:
+    headers = {'Content-Type': 'application/json'}
+
+  try:
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    response.raise_for_status()  # Raise an exception for non-2xx status codes
+    print("Data sent successfully.")
+  except requests.exceptions.RequestException as e:
+    print(f"Error sending data: {e}")
+
+
+
 
 def list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file):
     """
@@ -60,12 +94,17 @@ def list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file):
                 for key in new_files:
                     batch.put_item(Item={'id': key, 'value': 'processed'})
 
-            with open(output_file, 'w') as f:
-                for key in new_files:
-                    f.write(f"{key}\n")
+            for key in new_files:
+                print(key)
+                indata = s3getfile(key)
+                data = {
+                    "message": indata,
+                    "level": "INFO"
+                }
+                send_json_to_sumo(url, data)
+                print(indata)
 
             print(f"Processed {len(new_files)} new files.")
-            print(f"New file names written to {output_file}")
 
             # Update the last processed timestamp (get the latest modified timestamp)
             last_modified_timestamp = max(
@@ -96,5 +135,5 @@ def list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file):
 # Example usage:
 bucket_name = os.getenv("bucket_name")
 table_name = os.getenv("table_name")
-output_file = os.getenv("output_file")
+url = os.getenv("url")
 list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file)
