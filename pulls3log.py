@@ -39,7 +39,7 @@ def send_json_to_sumo(url, data, headers=None):
 
 
 
-def list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file):
+def list_new_files_and_store_in_dynamodb(bucket_name, table_name):
     """
     Lists new files from an S3 bucket based on last modified timestamp,
     stores their keys in DynamoDB (using Decimal for timestamps),
@@ -136,4 +136,4 @@ def list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file):
 bucket_name = os.getenv("bucket_name")
 table_name = os.getenv("table_name")
 url = os.getenv("url")
-list_new_files_and_store_in_dynamodb(bucket_name, table_name, output_file)
+list_new_files_and_store_in_dynamodb(bucket_name, table_name)
