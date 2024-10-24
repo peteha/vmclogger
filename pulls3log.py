@@ -16,9 +16,9 @@ def s3getfile(filename):
     return retndjson
 
 
-def send_json_to_sumo(url, data, headers=None):
+def send_json_to_logger(url, data, headers=None):
   """
-  Sends JSON data to a Sumo Logic HTTP Source.
+  Sends JSON data to HTTP
 
   Args:
     url: The URL of the Sumo Logic HTTP Source.
@@ -30,6 +30,7 @@ def send_json_to_sumo(url, data, headers=None):
     headers = {'Content-Type': 'application/json'}
 
   try:
+    print(url)
     response = requests.post(url, headers=headers, data=json.dumps(data))
     response.raise_for_status()  # Raise an exception for non-2xx status codes
     print("Data sent successfully.")
@@ -97,12 +98,14 @@ def list_new_files_and_store_in_dynamodb(bucket_name, table_name):
             for key in new_files:
                 print(key)
                 indata = s3getfile(key)
-                data = {
-                    "message": indata,
-                    "level": "INFO"
-                }
-                send_json_to_sumo(url, data)
-                print(indata)
+                for item in indata:
+                    print(item)
+                    data = {
+                    "events": [{
+                        "text": json.dumps(item)
+                        }]
+                    }
+                    send_json_to_logger(url, data)
 
             print(f"Processed {len(new_files)} new files.")
 
