@@ -5,8 +5,13 @@ This has been created as a proof of concept to pull S3 logs from a bucket are wr
 'logtos3.py' - writes a NDJSON file in GZIP to the S3 bucket 
 - Includes example code from VMC log.
 
-'pulls3log.py' - pulls the s3 NDJSON log and writes to a JSON http endpoint
+'pulls3log-dynamodb.py' - pulls the s3 NDJSON log and writes to a JSON http endpoint
 - Uses DynamoDB for key file to index S3 bucket files
+- Sends only new files to HTTP endpoint when seen in S3 bucket
+- Could be used a time based polling script to pull data from S3 periodically
+
+'pulls3log-sqlite.py' - pulls the s3 NDJSON log and writes to a JSON http endpoint
+- Uses sqlite for key file to index S3 bucket files
 - Sends only new files to HTTP endpoint when seen in S3 bucket
 - Could be used a time based polling script to pull data from S3 periodically
 
