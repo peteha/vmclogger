@@ -7,7 +7,6 @@ import sqlite3
 from decimal import Decimal
 
 # Ensure to install it using `pip install python-dotenv`
-from dotenv import load_dotenv
 from dotenvy import load_env, read_file
 import ndjson
 
@@ -90,13 +89,13 @@ def set_last_processed_timestamp(timestamp):
         print(f"Error setting last processed timestamp: {e}")
 
 
-def list_new_files_and_store_in_sqlite(bucket_name, url):
+def list_new_files_and_store_in_sqlite(s3bucket, s3url):
     s3 = boto3.client('s3')
     last_processed_timestamp = get_last_processed_timestamp()
     try:
         new_files = []
         s3_keys = set()
-        response = s3.list_objects_v2(Bucket=bucket_name)
+        response = s3.list_objects_v2(Bucket=s3bucket)
         while True:
             if 'Contents' in response:
                 for obj in response['Contents']:
@@ -104,7 +103,7 @@ def list_new_files_and_store_in_sqlite(bucket_name, url):
                     if Decimal(obj['LastModified'].timestamp()) > last_processed_timestamp:
                         new_files.append(obj['Key'])
             if 'NextContinuationToken' in response:
-                response = s3.list_objects_v2(Bucket=bucket_name, ContinuationToken=response['NextContinuationToken'])
+                response = s3.list_objects_v2(Bucket=s3bucket, ContinuationToken=response['NextContinuationToken'])
             else:
                 break
         if new_files:
@@ -113,10 +112,10 @@ def list_new_files_and_store_in_sqlite(bucket_name, url):
                 for key in new_files:
                     c.execute("REPLACE INTO processed_files (id, value) VALUES (?, 'processed')", (key,))
                     conn.commit()
-                    indata = s3getfile(bucket_name, key)
+                    indata = s3getfile(s3bucket, key)
                     for item in indata:
                         data = {"events": [{"text": json.dumps(item)}]}
-                        send_json_to_logger(url, data)
+                        send_json_to_logger(s3url, data)
                 last_modified_timestamp = max(Decimal(obj['LastModified'].timestamp()) for obj in response['Contents'])
                 set_last_processed_timestamp(last_modified_timestamp)
             print(f"Processed {len(new_files)} new files.")
@@ -131,8 +130,8 @@ def list_new_files_and_store_in_sqlite(bucket_name, url):
                     c.execute("DELETE FROM processed_files WHERE id = ?", (item[0],))
                     print(f"Removed {item[0]} from SQLite as it no longer exists in S3.")
             conn.commit()
-    except Exception as e:
-        print(f"Error listing objects, storing keys, or cleaning up SQLite DB: {e}")
+    except Exception as error:
+        print(f"Error listing objects, storing keys, or cleaning up SQLite DB: {error}")
 
 
 # Initialize the SQLite database

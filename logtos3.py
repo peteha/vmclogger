@@ -67,7 +67,7 @@ data = [
 ]
 new_uuid = uuid.uuid4()
 bucket_name = os.getenv("bucket_name")
-object_key = f"{new_uuid}.ndjson.gz"
+object_key = f"{new_uuid}_log.ndjson.gz"
 
 upload_compressed_ndjson_to_s3(data, bucket_name, object_key)
 list_files_in_bucket(bucket_name)
