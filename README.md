@@ -4,6 +4,8 @@ This has been created as a proof of concept to pull S3 logs from a bucket are wr
 
 Based on https://blogs.vmware.com/cloud-foundation/2024/09/18/vmware-cloud-on-aws-sddc-logs-update/
 
+![vmclogger](vmclogger.png)
+
 'logtos3.py' - writes a NDJSON file in GZIP to the S3 bucket 
 - Includes example code from VMC log.
 
