@@ -8,20 +8,20 @@ from dotenvy import load_env, read_file
 load_env(read_file('.env'))
 
 
-def upload_compressed_ndjson_to_s3(data, bucket_name, object_key):
+def upload_compressed_ndjson_to_s3(int_data, int_bucket_name, object_key):
   """
   Uploads compressed ndjson data to an S3 bucket.
 
   Args:
-    data: A list of dictionaries representing the ndjson data.
-    bucket_name: The name of the S3 bucket.
-    object_key: The key for the object in the S3 bucket.
+    int_data: A list of dictionaries representing the ndjson data.
+    int_bucket_name: The name of the S3 bucket.
+    int_object_key: The key for the object in the S3 bucket.
   """
 
   s3 = boto3.client('s3')
 
   # Convert data to ndjson string
-  ndjson_string = '\n'.join(json.dumps(item) for item in data)
+  ndjson_string = '\n'.join(json.dumps(item) for item in int_data)
 
   # Compress the ndjson string
   compressed_data = gzip.compress(ndjson_string.encode('utf-8'))
@@ -35,12 +35,12 @@ def upload_compressed_ndjson_to_s3(data, bucket_name, object_key):
   )
 
 
-def list_files_in_bucket(bucket_name):
+def list_files_in_bucket(int_bucket_name):
   """
   Lists all files in an S3 bucket.
 
   Args:
-      bucket_name: The name of the S3 bucket.
+      int_bucket_name: The name of the S3 bucket.
   """
 
   # Create an S3 client
