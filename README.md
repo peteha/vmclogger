@@ -29,17 +29,18 @@ local_bucket=<localbucketforstorage>
 url=<url for log endpoint>
 sqlitedb=s3logger.db
 ```
-![vmclogger-fluentd](fluentd.png)
+
 
 ## FluentD
+![vmclogger-fluentd](fluentd.png)
 
 The plugin and config for FluentD provide the capability to download the S3 NDJSON Zipped file and send them as JSON 
 events to a HTTP endpoint.  It uses the downloaded files as an index on the local machine then sends them to a HTTP 
 endpoint - in this example VCF Log.
 
 To use you will need to install the aws-sdk-s3 with:
+`gem install aws-sdk-s3` - authentication uses the same process as boto.  Place the credentials in secure location.
 
-'gem install aws-sdk-s3' - authentication uses the same process as boto.  Place the credentials in secure location.
 
 Config Example:
 
