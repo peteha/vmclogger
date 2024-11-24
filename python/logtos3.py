@@ -1,9 +1,12 @@
+
 import boto3
 import gzip
 import json
 import uuid
 import os
 from dotenvy import load_env, read_file
+import random
+import time  # Import the time module for delays
 
 load_env(read_file('.env'))
 
@@ -69,5 +72,15 @@ new_uuid = uuid.uuid4()
 bucket_name = os.getenv("bucket_name")
 object_key = f"{new_uuid}_log.ndjson.gz"
 
-upload_compressed_ndjson_to_s3(data, bucket_name, object_key)
-list_files_in_bucket(bucket_name)
+end_time = time.time() + 30 * 60
+
+# Run the loop until the end time is reached
+while time.time() < end_time:
+    new_uuid = uuid.uuid4()
+    object_key = f"{new_uuid}_log.ndjson.gz"
+    upload_compressed_ndjson_to_s3(data, bucket_name, object_key)
+    list_files_in_bucket(bucket_name)
+
+    # Sleep for a random interval between 5 and 10 seconds
+    sleep_time = random.randint(5, 10)
+    time.sleep(sleep_time)
