@@ -39,7 +39,7 @@ events to a HTTP endpoint.  It uses the downloaded files as an index on the loca
 endpoint - in this example VCF Log.
 
 To use you will need to install the aws-sdk-s3 with:
-`gem install aws-sdk-s3` - authentication uses the same process as boto.  Place the credentials in secure location.
+`gem install aws-sdk-s3` - authentication uses the same process as boto.
 
 
 Config Example:
