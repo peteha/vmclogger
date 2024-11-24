@@ -1,6 +1,6 @@
 Scripts for Dealing with VMC Logging to S3 Bucket
 
-This has been created as a proof of concept to pull S3 logs from a bucket are writen.
+This has been created as a proof of concept to pull S3 logs from the S3 bucket provided by VMC as perf the following blog.
 
 Based on https://blogs.vmware.com/cloud-foundation/2024/09/18/vmware-cloud-on-aws-sddc-logs-update/
 
