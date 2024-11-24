@@ -4,7 +4,7 @@ This has been created as a proof of concept to pull S3 logs from the S3 bucket p
 
 Based on https://blogs.vmware.com/cloud-foundation/2024/09/18/vmware-cloud-on-aws-sddc-logs-update/
 
-![vmclogger](vmclogger.png)
+![vmclogger-python](python.png)
 
 ## Python Scripts
 
@@ -29,7 +29,7 @@ local_bucket=<localbucketforstorage>
 url=<url for log endpoint>
 sqlitedb=s3logger.db
 ```
-
+![vmclogger-fluentd](fluentd.png)
 
 ## FluentD
 
@@ -43,6 +43,7 @@ To use you will need to install the aws-sdk-s3 with:
 
 Config Example:
 
+```
 <source>
   @type s3_noindex
   region ap-southeast-2
@@ -52,6 +53,7 @@ Config Example:
   tag s3_noindex
   interval 10
 </source>
+```
 
 Interval sets the time to poll the bucket.
 
